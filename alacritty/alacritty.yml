@@ -1,3 +1,4 @@
+# $HOME/.config/alacritty/alacritty.yml
 cursor:
    style:
      blinking: Always
