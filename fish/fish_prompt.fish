@@ -1,5 +1,5 @@
 # $HOME/.config/fish/functions/fish_prompt.fish
-#new one
+# new one
 function fish_prompt
     set_color yellow
     echo -n $USER
