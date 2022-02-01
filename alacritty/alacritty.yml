@@ -1,5 +1,23 @@
 # $HOME/.config/alacritty/alacritty.yml
+# https://github.com/shaunsingh/SFMono-Nerd-Font-Ligaturized
 cursor:
    style:
      blinking: Always
      shape: Underline
+font:
+  normal:
+    family: Liga SFMono Nerd Font
+    style: Regular
+
+  bold:
+    family: Liga SFMono Nerd Font
+    style: Bold
+
+  italic:
+    family: Liga SFMono Nerd Font
+    style: Italic
+
+  bold_italic:
+    family: Liga SFMono Nerd Font
+    style: Bold Italic
+  size: 9.5
