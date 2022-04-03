@@ -1,6 +1,6 @@
 # $HOME/.config/alacritty/alacritty.yml
 # https://github.com/shaunsingh/SFMono-Nerd-Font-Ligaturized
-# ~/.local/share/fonts/
+# $HOME/.local/share/fonts/
 cursor:
    style:
      blinking: Always
