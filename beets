@@ -1,0 +1,10 @@
+directory:
+plugins: fetchart
+fetchart:
+    cover_names: cover
+    sources: itunes *
+replace:
+    '_': ''
+    ':': ''
+    '|': ''
+    '\?': ''
