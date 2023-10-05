@@ -1,0 +1,21 @@
+{
+  "albumFolderFormat": "{ArtistName}/({AlbumYear}) {AlbumTitle} [{AudioQuality}] {Flag}",
+  "apiKeyIndex": 4,
+  "audioQuality": "Master",
+  "checkExist": true,
+  "downloadDelay": false,
+  "downloadPath": "/media/bigboy/temporary/tidal",
+  "includeEP": true,
+  "language": "0",
+  "lyricFile": false,
+  "multiThread": false,
+  "playlistFolderFormat": "Playlist/{PlaylistName} [{PlaylistUUID}]",
+  "saveAlbumInfo": false,
+  "saveCovers": true,
+  "showProgress": true,
+  "showTrackInfo": true,
+  "trackFileFormat": "{TrackNumber}. {TrackTitle}",
+  "usePlaylistFolder": true,
+  "videoFileFormat": "{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}",
+  "videoQuality": "P1080"
+}
