@@ -1,3 +1,5 @@
+# edit "~/.local/lib/python3.10/site-packages/aigpy/pathHelper.py" to prevent tidal-dl from renaming files
+
 {
   "albumFolderFormat": "{ArtistName}/({AlbumYear}) {AlbumTitle} [{AudioQuality}] {Flag}",
   "apiKeyIndex": 4,
