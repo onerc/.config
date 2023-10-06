@@ -1,9 +1,7 @@
-activesink=$(pacmd list-sinks | awk '/* index/ {print $3}')
-nameofthesink=$(pactl list sinks short | awk "/^$activesink/"'{print $2}')
-
-if [[ $nameofthesink =~ "hdmi" ]]; then
+activesink=$(pactl get-default-sink)
+if [[ ($activesink =~ "hdmi") ]]; then
         echo ""
-elif [[ $nameofthesink =~ "analog" ]]; then
+elif [[ $activesink =~ "analog" ]]; then
         echo ""
 else
         echo ""
