@@ -1,3 +1,5 @@
+#fixme
+
 while true; do
 activesink=$(pactl get-default-sink)
 if [[ $activesink =~ "hdmi" ]]; then
