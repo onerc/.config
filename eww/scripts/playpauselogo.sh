@@ -1,12 +1,12 @@
 while true; do
-playerstatus=$(playerctl -s status)
-if [[ $playerstatus == "Playing" ]]; then
-	status=""
-elif [[ $playerstatus == "Paused" ]]; then
-	status=""
-else
-	status=""
-fi
+case $(playerctl -s status) in
+    "Playing")
+        status="";;
+    "Paused")
+        status="";;
+    *)
+        status="";;
+esac
 
 if [[ $status != $previous ]]; then
      echo $status
