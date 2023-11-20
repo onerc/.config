@@ -1,6 +1,5 @@
 while true; do
-activesink=$(pactl get-default-sink)
-case $activesink in
+case $(pactl get-default-sink) in
     *"hdmi"*)
         status="";;
     *"analog"*)
