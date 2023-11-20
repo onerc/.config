@@ -1,14 +1,13 @@
-#fixme
-
 while true; do
 activesink=$(pactl get-default-sink)
-if [[ $activesink =~ "hdmi" ]]; then
-        echo ""
-elif [[ $activesink =~ "analog" ]]; then
-        echo ""
-else
-        echo ""
-fi
+case $activesink in
+    *"hdmi"*)
+        status="";;
+    *"analog"*)
+        status="";;
+    *)
+        status="";;
+esac
 
 if [[ $status != $previous ]]; then
      echo $status
