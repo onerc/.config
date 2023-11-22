@@ -115,7 +115,11 @@
 	(revealer :transition "slideleft"
               :reveal sourcetoggle
 	(box      :space-evenly false
-	(scale    :onchange "~/.config/eww/scripts/setvolume.sh source {}" ;; for some reason, setting the source volume too fast causes it to randomly cap at 68 or 46 
+	(scale    :onchange "~/.config/eww/scripts/setvolume.sh source {}" 
+	;; for some reason, setting the source volume too fast causes it to randomly cap at 68 or 46 
+	;; i may have found the reason, its called "deferred volume" https://manpages.ubuntu.com/manpages/lunar/en/man5/pulse-daemon.conf.5.html#default%20deferred%20volume%20settings
+	;; open /etc/pulse/daemon.conf, uncomment and set enable-deferred-volume=no, on terminal: pulseaudio -k && pulseaudio --start
+
               :value sourcevolume
               :max 11 ;; be careful, setvolume will multiply it with 10
               :width 100
