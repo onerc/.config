@@ -1,0 +1,140 @@
+(defvar sinktoggle false)
+(defvar sourcetoggle false)
+(defvar caltoggle false)
+
+(defwindow powermenu
+        :exclusive true
+        :monitor 0
+        :geometry (geometry
+	    :width "100%"
+	    :height "10"
+        :anchor "top center")
+(centerbox
+	(box :space-evenly false
+		(workspaces)
+        (cpustatus)
+        (ramstatus)
+        (diskstatus)
+    )
+	(caltime)
+	(box :space-evenly false :halign "end"
+		(label :text nowplaying)
+		(source)
+		(sink)
+        (switch)
+		(mediabar)
+    )
+)
+)
+
+(defwindow cal
+        :monitor 0
+		:geometry (geometry :x "50%" :anchor "top center")
+(calendar)
+)
+
+
+(defwidget mediabar []
+	(box
+	(button :onclick "playerctl previous"
+	(label  :text ""))
+	(button :onclick "playerctl play-pause"
+	(label  :text playpause))
+	(button :onclick "playerctl next"
+	(label  :text "")))
+)
+
+(defwidget caltime []
+	(eventbox :onclick "${EWW_CMD} open cal"
+			  :onrightclick "${EWW_CMD} close cal"
+	(label :text time))
+)
+
+(defwidget cpustatus []
+	(overlay
+	(circular-progress :value "${EWW_CPU.avg}" :thickness 9 :start-at 75)
+	(label :text ""))
+   ;;(label :text " ${round(EWW_CPU["avg"], 0)}% ")
+)
+
+(defwidget ramstatus []
+	(overlay
+	(circular-progress :value "${round(EWW_RAM.used_mem_perc, 0)}" :thickness 9 :start-at 75)
+	(label :text ""))
+    ;;(label :text " ${round(EWW_RAM.used_mem_perc, 0)}%")
+)
+
+(defwidget diskstatus []
+	(overlay
+	(circular-progress :value "${round(EWW_DISK["/"].used_perc, 0)}" :thickness 9 :start-at 75)
+	(label :text ""))
+	;;(label :text " ${round(EWW_DISK["/"].used_perc, 0)}%")
+)
+
+(deflisten outputlogo   `~/.config/eww/scripts/outputlogo.sh`)
+
+(deflisten playpause    `~/.config/eww/scripts/playpauselogo.sh`)
+
+(deflisten sinkstatus   `~/.config/eww/scripts/sinklogo.sh`)
+
+(deflisten sourcestatus `~/.config/eww/scripts/sourcelogo.sh`)
+
+(deflisten nowplaying   `~/.config/eww/scripts/nowplaying.sh`)
+
+(defpoll workspacejson :interval "0.2s" :initial "[]" `hyprctl workspaces -j | jq '.[].id' | sort | jq -s`)
+
+(defpoll time          :interval "1s" `date +'%H:%M'`)
+
+(defpoll sourcevolume  :interval "0.2s" :initial 0 `pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/10}'`)
+
+(defpoll sinkvolume    :interval "0.2s" :initial 0 `pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/10}'`)
+
+(defwidget sink []
+	(eventbox :onhover "${EWW_CMD} update sinktoggle=true"
+	          :onhoverlost "${EWW_CMD} update sinktoggle=false"
+	(box      :space-evenly false
+	(revealer :transition "slideleft"
+              :reveal sinktoggle
+	(box      :space-evenly false
+	(scale    :onchange "~/.config/eww/scripts/setvolume.sh sink {}"
+              :value sinkvolume
+              :max 11 ;; be careful, setvolume will multiply it with 10
+              :width 100
+              )
+	(label    :text "%${sinkvolume*10}")))
+	(button   :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+    (label    :text sinkstatus))
+))
+)
+
+
+(defwidget source []
+	(eventbox :onhover "${EWW_CMD} update sourcetoggle=true"
+	          :onhoverlost "${EWW_CMD} update sourcetoggle=false"
+	(box      :space-evenly false
+	(revealer :transition "slideleft"
+              :reveal sourcetoggle
+	(box      :space-evenly false
+	(scale    :onchange "~/.config/eww/scripts/setvolume.sh source {}"
+              :value sourcevolume
+              :max 11 ;; be careful, setvolume will multiply it with 10
+              :width 100
+              )
+	(label    :text "%${sourcevolume*10}")))
+    (button   :onclick "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+    (label    :text sourcestatus))
+))
+)
+
+
+(defwidget switch []
+	(box
+	(button :timeout 500 :onclick "pacmd set-default-sink $(pacmd list-sinks | awk '(/    index/) {print $2}')"
+    (label  :text outputlogo)))
+)
+
+(defwidget workspaces []
+(box
+(for i in workspacejson
+(button :onclick "hyprctl dispatch workspace ${i}"
+	(label :text i)))))
