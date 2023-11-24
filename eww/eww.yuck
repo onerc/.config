@@ -27,6 +27,7 @@
 )
 )
 
+
 (defwindow cal
         :monitor 0
 		:geometry (geometry :x "50%" :anchor "top center")
@@ -75,19 +76,20 @@
 
 (deflisten playpause    `~/.config/eww/scripts/playpauselogo.sh`)
 
-(deflisten sinkstatus   `~/.config/eww/scripts/sinklogo.sh`)
+(deflisten sinklogo   `~/.config/eww/scripts/sinklogo.sh`)
 
-(deflisten sourcestatus `~/.config/eww/scripts/sourcelogo.sh`)
+(deflisten sourcelogo `~/.config/eww/scripts/sourcelogo.sh`)
 
 (deflisten nowplaying   `~/.config/eww/scripts/nowplaying.sh`)
 
-(defpoll workspacejson :interval "0.2s" :initial "[]" `hyprctl workspaces -j | jq '.[].id' | sort | jq -s`)
+(deflisten sourcevolume :initial 0 `~/.config/eww/scripts/getvolume.sh source`)
 
-(defpoll time          :interval "1s" `date +'%H:%M'`)
+(deflisten sinkvolume   :initial 0 `~/.config/eww/scripts/getvolume.sh sink`)
 
-(defpoll sourcevolume  :interval "0.2s" :initial 0 `pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/10}'`)
+(defpoll workspacejson  :interval "0.2s" :initial "[]" `hyprctl workspaces -j | jq '.[].id' | sort | jq -s`)
 
-(defpoll sinkvolume    :interval "0.2s" :initial 0 `pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/10}'`)
+(defpoll time           :interval "1s" `date +'%H:%M'`)
+
 
 (defwidget sink []
 	(eventbox :onhover "${EWW_CMD} update sinktoggle=true"
@@ -96,14 +98,14 @@
 	(revealer :transition "slideleft"
               :reveal sinktoggle
 	(box      :space-evenly false
+	(label    :text "%${sinkvolume*10}")
 	(scale    :onchange "~/.config/eww/scripts/setvolume.sh sink {}"
               :value sinkvolume
               :max 11 ;; be careful, setvolume will multiply it with 10
               :width 100
-              )
-	(label    :text "%${sinkvolume*10}")))
+              )))
 	(button   :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-    (label    :text sinkstatus))
+    (label    :text sinklogo))
 ))
 )
 
@@ -115,18 +117,14 @@
 	(revealer :transition "slideleft"
               :reveal sourcetoggle
 	(box      :space-evenly false
-	(scale    :onchange "~/.config/eww/scripts/setvolume.sh source {}" 
-	;; for some reason, setting the source volume too fast causes it to randomly cap at 68 or 46 
-	;; i may have found the reason, its called "deferred volume" https://manpages.ubuntu.com/manpages/lunar/en/man5/pulse-daemon.conf.5.html#default%20deferred%20volume%20settings
-	;; open /etc/pulse/daemon.conf, uncomment and set enable-deferred-volume=no, on terminal: pulseaudio -k && pulseaudio --start
-
+	(label    :text "%${sourcevolume*10}")
+	(scale    :onchange "~/.config/eww/scripts/setvolume.sh source {}"
               :value sourcevolume
               :max 11 ;; be careful, setvolume will multiply it with 10
               :width 100
-              )
-	(label    :text "%${sourcevolume*10}")))
+              )))
     (button   :onclick "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
-    (label    :text sourcestatus))
+    (label    :text sourcelogo))
 ))
 )
 
