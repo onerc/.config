@@ -1,6 +1,4 @@
-(defvar sinktoggle false)
-(defvar sourcetoggle false)
-(defvar caltoggle false)
+(include "/home/riddle/.config/eww/variables.yuck")
 
 (defwindow powermenu
         :exclusive true
@@ -19,10 +17,11 @@
 	(caltime)
 	(box :space-evenly false :halign "end"
 		(label :text nowplaying)
-		(source)
-		(sink)
+		(sourcev2)
+		(sinkv2)
         (switch)
-		(mediabar)
+		(mediabar)		
+		(label :text internetlogo)
     )
 )
 )
@@ -55,82 +54,19 @@
 	(overlay
 	(circular-progress :value "${EWW_CPU.avg}" :thickness 9 :start-at 75)
 	(label :text ""))
-	;;(label :text " ${round(EWW_CPU["avg"], 0)}% ")
 )
 
 (defwidget ramstatus []
 	(overlay
 	(circular-progress :value "${round(EWW_RAM.used_mem_perc, 0)}" :thickness 9 :start-at 75)
 	(label :text ""))
-	;;(label :text " ${round(EWW_RAM.used_mem_perc, 0)}%")
 )
 
 (defwidget diskstatus []
 	(overlay
 	(circular-progress :value "${round(EWW_DISK["/"].used_perc, 0)}" :thickness 9 :start-at 75)
 	(label :text ""))
-	;;(label :text " ${round(EWW_DISK["/"].used_perc, 0)}%")
 )
-
-(deflisten outputlogo   `~/.config/eww/scripts/outputlogo.sh`)
-
-(deflisten playpause    `~/.config/eww/scripts/playpauselogo.sh`)
-
-(deflisten sinklogo     `~/.config/eww/scripts/sinklogo.sh`)
-
-(deflisten sourcelogo   `~/.config/eww/scripts/sourcelogo.sh`)
-
-(deflisten nowplaying   `~/.config/eww/scripts/nowplaying.sh`)
-
-(deflisten sourcevolume :initial 0 `~/.config/eww/scripts/getvolume.sh source`)
-
-(deflisten sinkvolume   :initial 0 `~/.config/eww/scripts/getvolume.sh sink`)
-
-(defpoll workspacejson  :interval "0.2s" :initial "[]" `hyprctl workspaces -j | jq '.[].id' | sort | jq -s`)
-
-(defpoll time           :interval "1s" `date +'%H:%M'`)
-
-
-(defwidget sink []
-	(eventbox :onhover "${EWW_CMD} update sinktoggle=true"
-	          :onhoverlost "${EWW_CMD} update sinktoggle=false"
-	(box      :space-evenly false
-	(revealer :transition "slideleft"
-              :reveal sinktoggle
-	(box      :space-evenly false
-	(label    :text "%${sinkvolume*10}")
-	(scale    :onchange "~/.config/eww/scripts/setvolume.sh sink {}"
-              :value sinkvolume
-              :max 11 ;; be careful, setvolume will multiply it with 10
-              :width 100
-              )))
-	(button   :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-	(label    :text sinklogo))
-))
-)
-
-
-(defwidget source []
-	(eventbox :onhover "${EWW_CMD} update sourcetoggle=true"
-	          :onhoverlost "${EWW_CMD} update sourcetoggle=false"
-	(box      :space-evenly false
-	(revealer :transition "slideleft"
-              :reveal sourcetoggle
-	(box      :space-evenly false
-	(label    :text "%${sourcevolume*10}")
-	(scale    :onchange "~/.config/eww/scripts/setvolume.sh source {}"
-	;; for some reason, setting the source volume too fast causes it to randomly cap at 68 or 46
-	;; i may have found the reason, its called "deferred volume" https://manpages.ubuntu.com/manpages/lunar/en/man5/pulse-daemon.conf.5.html#default%20deferred%20volume%20settings
-	;; open /etc/pulse/daemon.conf, uncomment and set enable-deferred-volume=no, on terminal: pulseaudio -k && pulseaudio --start
-              :value sourcevolume
-              :max 11 ;; be careful, setvolume will multiply it with 10
-              :width 100
-              )))
-	(button   :onclick "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
-	(label    :text sourcelogo))
-))
-)
-
 
 (defwidget switch []
 	(box
@@ -143,3 +79,28 @@
 (for i in workspacejson
 (button :onclick "hyprctl dispatch workspace ${i}"
 	(label :text i)))))
+
+
+(defwidget sinkv2 []
+(eventbox :onhover "${EWW_CMD} update sinktoggle=true"
+          :onhoverlost "${EWW_CMD} update sinktoggle=false"
+		  :onscroll "~/.config/eww/scripts/superdupervolumecontrol.sh sink-{}"
+(button :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+(box :space-evenly false
+(label :text sinklogo)
+(revealer :transition "slideright"
+		  :reveal sinktoggle
+(label :text "%${sinkvolume*10}"))
+))))
+
+(defwidget sourcev2 []
+(eventbox :onhover "${EWW_CMD} update sourcetoggle=true"
+          :onhoverlost "${EWW_CMD} update sourcetoggle=false"
+          :onscroll "~/.config/eww/scripts/superdupervolumecontrol.sh source-{}"
+(button :onclick "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+(box :space-evenly false
+(label :text sourcelogo)
+(revealer :transition "slideright"
+          :reveal sourcetoggle
+(label :text "%${sourcevolume*10}"))
+))))
