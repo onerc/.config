@@ -1,0 +1,39 @@
+(defwidget sink []
+    (eventbox :onhover "${EWW_CMD} update sinktoggle=true"
+              :onhoverlost "${EWW_CMD} update sinktoggle=false"
+    (box      :space-evenly false
+    (revealer :transition "slideleft"
+              :reveal sinktoggle
+    (box      :space-evenly false
+    (label    :text "%${sinkvolume*10}")
+    (scale    :onchange "~/.config/eww/scripts/setvolume.sh sink {}"
+              :value sinkvolume
+              :max 11 ;; be careful, setvolume will multiply it with 10
+              :width 100
+              )))
+    (button   :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+    (label    :text sinklogo))
+))
+)
+
+
+(defwidget source []
+    (eventbox :onhover "${EWW_CMD} update sourcetoggle=true"
+              :onhoverlost "${EWW_CMD} update sourcetoggle=false"
+    (box      :space-evenly false
+    (revealer :transition "slideleft"
+              :reveal sourcetoggle
+    (box      :space-evenly false
+    (label    :text "%${sourcevolume*10}")
+    (scale    :onchange "~/.config/eww/scripts/setvolume.sh source {}"
+    ;; for some reason, setting the source volume too fast causes it to randomly cap at 68 or 46
+    ;; i may have found the reason, its called "deferred volume" https://manpages.ubuntu.com/manpages/lunar/en/man5/pulse-daemon.conf.5.html#default%20deferred%20volume%20settings
+    ;; open /etc/pulse/daemon.conf, uncomment and set enable-deferred-volume=no, on terminal: pulseaudio -k && pulseaudio --start
+              :value sourcevolume
+              :max 11 ;; be careful, setvolume will multiply it with 10
+              :width 100
+              )))
+    (button   :onclick "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+    (label    :text sourcelogo))
+))
+)
