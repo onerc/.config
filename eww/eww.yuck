@@ -16,12 +16,14 @@
     )
 	(caltime)
 	(box :space-evenly false :halign "end"
-		(label :text nowplaying)
+		(button
+		(label :text nowplaying))
 		(sourcev2)
 		(sinkv2)
         (switch)
 		(mediabar)		
-		(label :text internetlogo)
+		(button
+		(label :text internetlogo))
     )
 )
 )
@@ -51,21 +53,24 @@
 )
 
 (defwidget cpustatus []
+	(button
 	(overlay
 	(circular-progress :value "${EWW_CPU.avg}" :thickness 9 :start-at 75)
-	(label :text ""))
+	(label :text "")))
 )
 
 (defwidget ramstatus []
+	(button
 	(overlay
 	(circular-progress :value "${round(EWW_RAM.used_mem_perc, 0)}" :thickness 9 :start-at 75)
-	(label :text ""))
+	(label :text "")))
 )
 
 (defwidget diskstatus []
+	(button
 	(overlay
 	(circular-progress :value "${round(EWW_DISK["/"].used_perc, 0)}" :thickness 9 :start-at 75)
-	(label :text ""))
+	(label :text "")))
 )
 
 (defwidget switch []
@@ -84,7 +89,7 @@
 (defwidget sinkv2 []
 (eventbox :onhover "${EWW_CMD} update sinktoggle=true"
           :onhoverlost "${EWW_CMD} update sinktoggle=false"
-		  :onscroll "~/.config/eww/scripts/superdupervolumecontrol.sh sink-{}"
+		  :onscroll "~/.config/eww/scripts/superdupervolumecontrol.sh sink {}"
 (button :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
 (box :space-evenly false
 (label :text sinklogo)
@@ -96,7 +101,7 @@
 (defwidget sourcev2 []
 (eventbox :onhover "${EWW_CMD} update sourcetoggle=true"
           :onhoverlost "${EWW_CMD} update sourcetoggle=false"
-          :onscroll "~/.config/eww/scripts/superdupervolumecontrol.sh source-{}"
+          :onscroll "~/.config/eww/scripts/superdupervolumecontrol.sh source {}"
 (button :onclick "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
 (box :space-evenly false
 (label :text sourcelogo)
