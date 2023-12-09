@@ -1,40 +1,36 @@
 (include "/home/riddle/.config/eww/variables.yuck")
+(include "/home/riddle/.config/eww/wip.yuck")
 
 (defwindow powermenu
         :exclusive true
         :monitor 0
-        :geometry (geometry
+        :geometry
+        (geometry
 	    :width "100%"
 	    :height "10"
         :anchor "top center")
 (centerbox
 	(box :space-evenly false
 		(workspaces)
-        (cpustatus)
-        (ramstatus)
-        (diskstatus)
+		(cpustatus)
+		(ramstatus)
+		(diskstatus)
     )
 	(caltime)
 	(box :space-evenly false :halign "end"
 		(button
+		(label :text cache))
+		(button
 		(label :text nowplaying))
 		(sourcev2)
 		(sinkv2)
-        (switch)
+		(switch)
 		(mediabar)		
-		(button
-		(label :text internetlogo))
+;;		(button
+;;		(label :text internetlogo))
     )
 )
 )
-
-
-(defwindow cal
-        :monitor 0
-		:geometry (geometry :x "50%" :anchor "top center")
-(calendar)
-)
-
 
 (defwidget mediabar []
 	(box
@@ -46,45 +42,32 @@
 	(label  :text "")))
 )
 
-(defwidget caltime []
-	(eventbox :onclick "${EWW_CMD} open cal"
-			  :onrightclick "${EWW_CMD} close cal"
-	(label :text time))
-)
-
 (defwidget cpustatus []
 	(button
 	(overlay
-	(circular-progress :value "${EWW_CPU.avg}" :thickness 9 :start-at 75)
+	(circular-progress :value {round(EWW_CPU.avg, 0)} :thickness 9 :start-at 75)
 	(label :text "")))
 )
 
 (defwidget ramstatus []
 	(button
 	(overlay
-	(circular-progress :value "${round(EWW_RAM.used_mem_perc, 0)}" :thickness 9 :start-at 75)
+	(circular-progress :value {round(EWW_RAM.used_mem_perc, 0)} :thickness 9 :start-at 75)
 	(label :text "")))
 )
 
 (defwidget diskstatus []
 	(button
 	(overlay
-	(circular-progress :value "${round(EWW_DISK["/"].used_perc, 0)}" :thickness 9 :start-at 75)
+	(circular-progress :value {round(EWW_DISK["/"].used_perc, 0)} :thickness 9 :start-at 75)
 	(label :text "")))
 )
 
 (defwidget switch []
 	(box
-	(button :timeout 500 :onclick "pacmd set-default-sink $(pacmd list-sinks | awk '(/    index/) {print $2}')"
+	(button :timeout 1000 :onclick "pacmd set-default-sink $(pacmd list-sinks | awk '(/    index/) {print $2}')"
 	(label  :text outputlogo)))
 )
-
-(defwidget workspaces []
-(box
-(for i in workspacejson
-(button :onclick "hyprctl dispatch workspace ${i}"
-	(label :text i)))))
-
 
 (defwidget sinkv2 []
 (eventbox :onhover "${EWW_CMD} update sinktoggle=true"
@@ -94,7 +77,7 @@
 (box :space-evenly false
 (label :text sinklogo)
 (revealer :transition "slideright"
-		  :reveal sinktoggle
+          :reveal sinktoggle
 (label :text "%${sinkvolume*10}"))
 ))))
 
