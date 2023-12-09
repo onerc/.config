@@ -16,9 +16,11 @@
 
 (deflisten internetlogo `~/.config/eww/scripts/getinfo.sh internetlogo`)
 
-(defpoll workspacejson  :interval "0.2s" :initial "[]" `hyprctl workspaces -j | jq '.[].id' | sort | jq -s`)
+(defpoll workspacelist  :interval "0.2s" :initial "[]" `hyprctl workspaces -j`)
 
-(defpoll time           :interval "1s" `date +'%H:%M'`)
+(defpoll time           :interval "1s" `date +'%H:%M:%S'`)
+
+(defpoll cache          :interval "1s" `cat /proc/meminfo | awk '/Dirty/{print $2$3}'`)
 
 (defvar sinktoggle false)
 (defvar sourcetoggle false)
