@@ -32,9 +32,9 @@ fi
 get_output_logo() {
 
 case $(pactl get-default-sink) in
-    *"hdmi"*)
+    *hdmi*)
         status="";;
-    *"analog"*)
+    *analog*)
         status="";;
     *)
         status="";;
@@ -45,9 +45,9 @@ esac
 get_play_pause_logo() {
 
 case $(playerctl -s status) in
-    "Playing")
+    Playing)
         status="";;
-    "Paused")
+    Paused)
         status="";;
     *)
         status="";;
@@ -57,10 +57,10 @@ esac
 ###########################################################################################################################################################################################################################################
 get_now_playing() {
 
-if [[ $(playerctl -s status) == "" ]]; then
+if [ -z $(playerctl -s status) ]; then
     status=""
 else
-    if [[ $(playerctl metadata album) != "" ]]; then # if jellyfin is playing
+    if [[ ! -z $(playerctl metadata album) ]]; then # if album isnt empty, aka jellyfin is playing
         status=$(playerctl metadata --format "{{artist}} - {{title}}")
     elif [[ $(playerctl metadata artist) =~ " - Topic" ]]; then # if its youtube and artist name has "topic"
         fixedartist=$(playerctl metadata artist | rev | cut -c 9- | rev) # dunno if bash has negative slicing
@@ -71,22 +71,66 @@ else
 fi
 
 }
-###########################################################################################################################################################################################################################################
+##########################################################################################################################################################################################################################################
+
+get_internet_status() {
+
+if ping -c 1 -W 3 ping.archlinux.org > /dev/null; then
+	status=""
+else
+	status=""
+fi
+
+}
+##########################################################################################################################################################################################################################################
+
+get_sink_volume() {
+
+status=$(pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/10}')
+
+}
+##########################################################################################################################################################################################################################################
+
+get_source_volume() {
+
+status=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/10}')
+
+}
+##########################################################################################################################################################################################################################################
+
 case $1 in
-	"source")
+	sourcelogo)
 		get_source_logo;;
-	"sink")
+	sinklogo)
 		get_sink_logo;;
-	"output")
+	sourcevol)
+		get_source_volume;;
+	sinkvol)
+		get_sink_volume;;
+	output)
 		get_output_logo;;
-	"playpause")
+	playpause)
 		get_play_pause_logo;;
-	"nowplaying")
+	nowplaying)
 		get_now_playing;;
+	internetlogo)
+		get_internet_status;;
+	*)
+		status="Wrong arg";;
 esac
+
 if [[ $previous != $status ]]; then
     previous=$status
-    echo $status
+   	echo $status
 fi
-sleep 0.2
+
+case $1 in
+	sinkvol | sinklogo | sourcevol | sourcelogo)
+		sleep 0.1;;
+	internetlogo)
+		sleep 3;;
+	*)
+		sleep 0.2;;
+esac
+
 done
