@@ -19,6 +19,8 @@
 	(caltime)
 	(box :space-evenly false :halign "end"
 		(button
+		(label :text signalstatus))
+		(button
 		(label :text cache))
 		(button
 		(label :text nowplaying))
@@ -92,3 +94,10 @@
           :reveal sourcetoggle
 (label :text "%${sourcevolume*10}"))
 ))))
+
+(defwidget workspaces []
+(box
+(for i in "[1,2,3,4,5,6,7,8,9,10]"
+(button :active {jq(workspacelist,'any(.id==${i})')} :onclick "hyprctl dispatch workspace ${i} > /dev/null"
+;;(button :active {matches(workspacelist, i)} :onclick "hyprctl dispatch workspace ${i} > /dev/null" ;; as long as workspace id is less then 10, this also works, otherwise 10 makes 1 active as well, as they both have 1 xD
+    (label :text i)))))
