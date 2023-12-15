@@ -3,41 +3,40 @@ while true; do
 get_volume() {
 
 uppercased_arg=$(echo $1 | tr "[:lower:]" "[:upper:]")
-status=$(pactl get-$1-volume @DEFAULT_$uppercased_arg@ | awk 'NR==1{print $5/10}')
+status=$(pactl get-$1-volume @DEFAULT_$uppercased_arg@ | awk 'NR==1{print $5/1}')
 
 }
 ##########################################################################################################################################################################################################################################
 
-get_sink_logo() {
+get_audio_logo() {
 
-current_volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/1}') # divide by 1 to get rid of percentage sign without tr command :P
-mute_status=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
-if [ $mute_status == "yes" ] || [ $current_volume == 0 ]; then
-        status=""
-else
-    if (( $current_volume <= 33 )); then
-        status=""
-    elif (( $current_volume <= 66 )); then
-        status=""
-    else
-        status=""
-    fi
-fi
-
-}
-###########################################################################################################################################################################################################################################
-get_source_logo(){
-
-current_volume=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/1}') # divide by 1 to get rid of percentage sign without tr command :P
-mute_status=$(pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print $2}')
-if [ $mute_status == "yes" ] || [ $current_volume == 0 ]; then
-		status=""
-else
-		status=""
-fi
+uppercased_arg=$(echo $1 | tr "[:lower:]" "[:upper:]")
+current_volume=$(pactl get-$1-volume @DEFAULT_$uppercased_arg@ | awk 'NR==1{print $5/1}')
+mute_status=$(pactl get-$1-mute @DEFAULT_$uppercased_arg@ | awk '{print $2}')
+case $1 in
+    sink)
+        if [ $mute_status == "yes" ] || [ $current_volume == 0 ]; then
+	        status=""
+        elif (( $current_volume <= 33 )); then
+	        status=""
+        elif (( $current_volume <= 66 )); then
+	        status=""
+        else
+	        status=""
+        fi
+        ;;
+    source)
+        if [ $mute_status == "yes" ] || [ $current_volume == 0 ]; then
+			status=""
+        else
+			status=""
+        fi
+        ;;
+esac
 
 }
-###########################################################################################################################################################################################################################################
+##########################################################################################################################################################################################################################################
+
 get_output_logo() {
 
 case $(pactl get-default-sink) in
@@ -50,7 +49,8 @@ case $(pactl get-default-sink) in
 esac
 
 }
-###########################################################################################################################################################################################################################################
+##########################################################################################################################################################################################################################################
+
 get_play_pause_logo() {
 
 case $(playerctl -s status) in
@@ -63,20 +63,19 @@ case $(playerctl -s status) in
 esac
 
 }
-###########################################################################################################################################################################################################################################
+##########################################################################################################################################################################################################################################
+
 get_now_playing() {
 
 if [ -z $(playerctl -s status) ]; then
     status=""
+elif [[ ! -z $(playerctl metadata album) ]]; then # if album isnt empty, aka jellyfin is playing
+    status=$(playerctl metadata --format "{{artist}} - {{title}}")
+elif [[ $(playerctl metadata artist) =~ " - Topic" ]]; then # if its youtube and artist name has "topic"
+    fixedartist=$(playerctl metadata artist | rev | cut -c 9- | rev) # dunno if bash has negative slicing
+    status=$(playerctl metadata --format "$fixedartist - {{title}}")
 else
-    if [[ ! -z $(playerctl metadata album) ]]; then # if album isnt empty, aka jellyfin is playing
-        status=$(playerctl metadata --format "{{artist}} - {{title}}")
-    elif [[ $(playerctl metadata artist) =~ " - Topic" ]]; then # if its youtube and artist name has "topic"
-        fixedartist=$(playerctl metadata artist | rev | cut -c 9- | rev) # dunno if bash has negative slicing
-        status=$(playerctl metadata --format "$fixedartist - {{title}}")
-    else
-        status=$(playerctl metadata title)
-    fi
+    status=$(playerctl metadata title)
 fi
 
 }
@@ -109,9 +108,9 @@ case $1 in
 	sourcevol)
 		get_volume source;;
 	sinklogo)
-		get_sink_logo;;
+		get_audio_logo sink;;
 	sourcelogo)
-		get_source_logo;;
+		get_audio_logo source;;
 	output)
 		get_output_logo;;
 	playpause)
