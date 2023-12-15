@@ -1,16 +1,19 @@
 while true; do
-get_source_logo(){
 
-current_volume=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/1}') # divide by 1 to get rid of percentage sign without tr command :P
-mute_status=$(pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print $2}')
-if [ $mute_status == "yes" ] || [ $current_volume == 0 ]; then
-		status=""
-else
-		status=""
-fi
+get_sink_volume() {
+
+status=$(pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/10}')
 
 }
-###########################################################################################################################################################################################################################################
+##########################################################################################################################################################################################################################################
+
+get_source_volume() {
+
+status=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/10}')
+
+}
+##########################################################################################################################################################################################################################################
+
 get_sink_logo() {
 
 current_volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/1}') # divide by 1 to get rid of percentage sign without tr command :P
@@ -25,6 +28,18 @@ else
     else
         status=""
     fi
+fi
+
+}
+###########################################################################################################################################################################################################################################
+get_source_logo(){
+
+current_volume=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/1}') # divide by 1 to get rid of percentage sign without tr command :P
+mute_status=$(pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print $2}')
+if [ $mute_status == "yes" ] || [ $current_volume == 0 ]; then
+		status=""
+else
+		status=""
 fi
 
 }
@@ -84,29 +99,25 @@ fi
 }
 ##########################################################################################################################################################################################################################################
 
-get_sink_volume() {
+get_signal_status() {
+if $(hyprctl clients -j | jq '.[] | select(.class=="Signal") | .title=="Signal"'); then
+	status=""
+else
+	status=""
 
-status=$(pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/10}')
-
-}
-##########################################################################################################################################################################################################################################
-
-get_source_volume() {
-
-status=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/10}')
-
+fi
 }
 ##########################################################################################################################################################################################################################################
 
 case $1 in
-	sourcelogo)
-		get_source_logo;;
-	sinklogo)
-		get_sink_logo;;
-	sourcevol)
-		get_source_volume;;
 	sinkvol)
 		get_sink_volume;;
+	sourcevol)
+		get_source_volume;;
+	sinklogo)
+		get_sink_logo;;
+	sourcelogo)
+		get_source_logo;;
 	output)
 		get_output_logo;;
 	playpause)
@@ -115,6 +126,8 @@ case $1 in
 		get_now_playing;;
 	internetlogo)
 		get_internet_status;;
+	signalstatus)
+		get_signal_status;;
 	*)
 		status="Wrong arg";;
 esac
