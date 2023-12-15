@@ -1,15 +1,9 @@
 while true; do
 
-get_sink_volume() {
+get_volume() {
 
-status=$(pactl get-sink-volume @DEFAULT_SINK@ | awk 'NR==1{print $5/10}')
-
-}
-##########################################################################################################################################################################################################################################
-
-get_source_volume() {
-
-status=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk 'NR==1{print $5/10}')
+uppercased_arg=$(echo $1 | tr "[:lower:]" "[:upper:]")
+status=$(pactl get-$1-volume @DEFAULT_$uppercased_arg@ | awk 'NR==1{print $5/10}')
 
 }
 ##########################################################################################################################################################################################################################################
@@ -111,9 +105,9 @@ fi
 
 case $1 in
 	sinkvol)
-		get_sink_volume;;
+		get_volume sink;;
 	sourcevol)
-		get_source_volume;;
+		get_volume source;;
 	sinklogo)
 		get_sink_logo;;
 	sourcelogo)
