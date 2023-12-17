@@ -1,0 +1,10 @@
++-----------------+----------------+------+------+---------+---------------------------------------+-------------------------------------------------------------------------+
+| Window managers | Display server | Move | Swap | Dwindle |             Configuration             |                             Personal notes                              |
++-----------------+----------------+------+------+---------+---------------------------------------+-------------------------------------------------------------------------+
+| i3              | Xorg           | yes  | no   | no      | easy                                  | move is quirky                                                          |
+| BSPWM           | Xorg           | no   | yes  | yes     | easy                                  | move is quirky                                                          |
+| Awesome         | Xorg           | ?    | ?    | yes     | hell                                  | has bajillion useless layouts, dwindle is weird                         |
+| Hyprland        | Wayland        | yes  | yes  | yes     | easy but sometimes works unexpectedly | wayland requires some "hacks", dev does things against unix philosophy* |
++-----------------+----------------+------+------+---------+---------------------------------------+-------------------------------------------------------------------------+
+
+* Make each program do one thing well. To do a new job, build afresh rather than complicate old programs by adding new "features".
