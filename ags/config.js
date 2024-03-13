@@ -56,7 +56,7 @@ const nowPlaying = () => Button({
     on_middle_click: () => Mpris.getPlayer()?.stop(),
     child: Label('-').hook(Mpris, self => {
         if (Mpris.players[0]) {
-            const { track_artists, track_title, track_album, metadata } = Mpris.players[0]
+            const {track_artists, track_title, track_album} = Mpris.players[0]
             // if its jellyfin or its youtube and artist/channel name has "topic"
             if (track_album || track_artists[0].includes(' - Topic')) {
                 self.label = `${track_artists.join(', ').replace(' - Topic', '')} - ${track_title}`
