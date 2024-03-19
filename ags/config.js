@@ -5,7 +5,8 @@ const { Button, Box, CenterBox, Icon, Label, Revealer, Window } = Widget
 
 const speakerRevealerState = Variable(false)
 const microphoneRevealerState = Variable(false)
-const isIECselected = Variable(false)
+const isUnwantedSinkSelected = Variable(false)
+const unwantedSink = 'iec958'
 
 const category = {
     99: 'overamplified',
@@ -17,11 +18,11 @@ const category = {
 
 const audioOutputSwitch = () => Button({
     on_clicked: () => Audio.speaker = Audio.speakers.find(sink => {return sink.stream !== Audio.speaker.stream}),
-    on_middle_click: () => console.log(Mpris.players[0]),
+    on_middle_click: () => console.log(Mpris.players),
     child: Label('???').hook(Audio.speaker, self => {
-        if (Audio.speaker.name?.includes('hdmi')){
+        if (Audio.speaker.name?.includes('hdmi')) {
             self.label = ""
-        } else if (Audio.speaker.name?.includes('analog')){
+        } else if (Audio.speaker.name?.includes('analog')) {
             self.label = ""
         } else
             self.label = ""
@@ -41,13 +42,13 @@ const Workspaces = () => Box({
             on_clicked: () => Hyprland.messageAsync(`dispatch workspace ${id}`),
             child: Label(`${id}`),
             //class_name: Hyprland.active.workspace.bind('id').transform(i => `${i === id ? 'focused' : ''}`),
-        }));
+        }))
     }),
-});
+})
 
 const Clock = () => Label({
     setup: self => self.poll(1000, self => Utils.execAsync(['date', '+%H:%M']).then(date => self.label = date)),
-});
+})
 
 const nowPlaying = () => Button({
     on_clicked: () => Mpris.getPlayer()?.playPause(),
@@ -57,33 +58,34 @@ const nowPlaying = () => Button({
     child: Label('-').hook(Mpris, self => {
         if (Mpris.players[0]) {
             const {track_artists, track_title, track_album} = Mpris.players[0]
-            // if its jellyfin or its youtube and artist/channel name has "topic"
-            if (track_album || track_artists[0].includes(' - Topic')) {
+            if (track_album) { // if its jellyfin
+                self.label = `${track_artists.join(', ')} - ${track_title}`
+            } else if (track_artists[0].includes(' - Topic')) { // if its youtube and artist/channel name has "topic"
                 self.label = `${track_artists.join(', ').replace(' - Topic', '')} - ${track_title}`
             } else {
                 self.label = track_title
             }
         } else {
-            self.label = 'Nothing is playing';
+            self.label = 'Nothing is playing'
         }
     }, 'player-changed'),
-});
+})
 
 const speakerVolume = () => Button({
-    on_scroll_up: () => {if (!(isIECselected.value)) {Audio.speaker.volume < 0.9 ? Audio.speaker.volume += 0.1 : Audio.speaker.volume = 1}},
-    on_scroll_down: () => {if (!(isIECselected.value)) {Audio.speaker.volume -= 0.1}},
-    on_clicked: () => Utils.execAsync(['pactl', 'set-source-mute', '@DEFAULT_SOURCE@', 'toggle']),
+    on_scroll_up: () => {if (!(isUnwantedSinkSelected.value)) {Audio.speaker.volume < 0.9 ? Audio.speaker.volume += 0.1 : Audio.speaker.volume = 1}},
+    on_scroll_down: () => {if (!(isUnwantedSinkSelected.value)) {Audio.speaker.volume -= 0.1}},
+    on_clicked: () => Utils.execAsync(['pactl', 'set-sink-mute', '@DEFAULT_SINK@', 'toggle']),
 	child: Box({
-        css: 'padding: 3px;',
+        css: 'padding: 3px',
         children: [
             Icon().hook(Audio.speaker, self => {
-                isIECselected.value = Audio.speaker.name?.includes('iec958')
-                const icon = Audio.speaker.stream?.is_muted || isIECselected.value ? 0 : [99, 66, 33, 1, 0].find(threshold => threshold <= Audio.speaker.volume * 100);
+                isUnwantedSinkSelected.value = Audio.speaker.name?.includes(unwantedSink)
+                const icon = Audio.speaker.stream?.is_muted || isUnwantedSinkSelected.value ? 0 : [99, 66, 33, 1, 0].find(threshold => threshold <= Audio.speaker.volume * 100)
                 self.icon = `audio-volume-${category[icon]}-symbolic`
             }),
             Revealer({
                 reveal_child: speakerRevealerState.bind(),
-                child: Label().hook(Audio.speaker, self => {self.label = isIECselected.value ? ' N/A' : ` %${Math.round(Audio.speaker.volume * 100)}`}),
+                child: Label().hook(Audio.speaker, self => {self.label = isUnwantedSinkSelected.value ? ' N/A' : ` %${Math.round(Audio.speaker.volume * 100)}`}),
                 transition: 'slide_left',
             }),
         ]
@@ -98,10 +100,10 @@ const microphoneVolume = () => Button({
     on_scroll_down: () => Audio.microphone.volume -= 0.1,
     on_clicked: () => Utils.execAsync(['pactl', 'set-source-mute', '@DEFAULT_SOURCE@', 'toggle']),
 	child: Box({
-        css: 'padding: 3px;',
+        css: 'padding: 3px',
         children: [
             Icon().hook(Audio.microphone, self => {
-                const icon = Audio.microphone.stream?.is_muted ? 0 : [66, 33, 1, 0].find(threshold => threshold <= Audio.microphone.volume * 100);
+                const icon = Audio.microphone.stream?.is_muted ? 0 : [66, 33, 1, 0].find(threshold => threshold <= Audio.microphone.volume * 100)
                 self.icon = `microphone-sensitivity-${category[icon]}-symbolic`
             }),
             Revealer({
@@ -113,7 +115,7 @@ const microphoneVolume = () => Button({
     })
 })
 .on("leave-notify-event", () => microphoneRevealerState.value = false)
-.on("enter-notify-event", () => microphoneRevealerState.value = true);
+.on("enter-notify-event", () => microphoneRevealerState.value = true)
 
 
 
@@ -123,14 +125,14 @@ const Left = () => Box({
         //Workspaces(),
         staticWorkspaces(),
     ],
-});
+})
 
 const Center = () => Box({
     spacing: 8,
     children: [
         Clock(),
     ],
-});
+})
 
 const Right = () => Box({
     hpack: 'end',
@@ -140,8 +142,7 @@ const Right = () => Box({
         speakerVolume(),
         audioOutputSwitch(),
     ],
-    
-});
+})
 
 const Bar = (monitor = 0) => Window({
     name: `bar-${monitor}`, // name has to be unique
@@ -157,10 +158,8 @@ const Bar = (monitor = 0) => Window({
             end_widget: Right()
         }),
     }),
-});
+})
 
-export default {
-    windows: [
-        Bar()
-    ],
-};
+App.config({
+    windows: [Bar()]
+})
