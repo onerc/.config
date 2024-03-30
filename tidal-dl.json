@@ -1,6 +1,9 @@
 # edit "~/.local/lib/python3.10/site-packages/aigpy/pathHelper.py" to prevent tidal-dl from renaming files
+#https://github.com/AIGMix/AIGPY/blob/f4e4f58f327db06e62a9abafc770f702990da0ea/aigpy/pathHelper.py#L70-L82
+
 # edit "~/.local/lib/python3.10/site-packages/aigpy/tagHelper.py" to prevent tidal-dl from joining artist names
 # https://github.com/AIGMix/AIGPY/blob/f4e4f58f327db06e62a9abafc770f702990da0ea/aigpy/tagHelper.py#L55
+
 {
   "albumFolderFormat": "{ArtistName}/({AlbumYear}) {AlbumTitle} [{AudioQuality}] {Flag}",
   "apiKeyIndex": 4,
