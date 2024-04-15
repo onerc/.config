@@ -21,7 +21,7 @@
     "CHUNK_SIZE": "20000",
     "DOWNLOAD_REAL_TIME": "False",
     "LANGUAGE": "en",
-    "PRINT_SPLASH": "False",
+    "PRINT_SPLASH": "True",
     "PRINT_SKIPS": "True",
     "PRINT_DOWNLOAD_PROGRESS": "True",
     "PRINT_ERRORS": "True",
@@ -29,5 +29,6 @@
     "PRINT_API_ERRORS": "True",
     "PRINT_PROGRESS_INFO": "True",
     "PRINT_WARNINGS": "True",
-    "TEMP_DOWNLOAD_DIR": ""
+    "TEMP_DOWNLOAD_DIR": "",
+    "EMBED_COVERS": "False"
 }
