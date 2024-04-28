@@ -1,0 +1,13 @@
+.revealerIcon, .revealerLabel{
+    padding: 0px 4px;
+}
+
+.revealerLabel {
+    min-width: 2.6rem;
+}
+
+
+/* Not used */
+.speakerMicIcon {
+    padding-left: 4px;
+}
