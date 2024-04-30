@@ -30,11 +30,11 @@ const sensors = Variable('', {
 })
 
 const cpu = Variable('', {
-    poll: [1000, ['bash', '-c', "top -bn 1 | grep '%Cpu' | awk '{print 100-$8}'"], value => `${Math.round(value)}%`]
+    poll: [1000, ['bash', '-c', "top -bn 1 | awk '/Cpu/{print 100-$8}'"], value => `${Math.round(value)}%`]
 })
 
 const ram = Variable('', {
-    poll: [1000, ['bash', '-c', "free | grep Mem: | awk '{print $3/$2 * 100}'"], value => `${Math.round(value)}%`]
+    poll: [1000, ['bash', '-c', "free | awk '/Mem/{print $3/$2 * 100}'"], value => `${Math.round(value)}%`]
 })
 
 
@@ -43,10 +43,10 @@ const audioOutputSwitch = () => Button({
     onMiddleClick: () => console.log(sensors.value),
     child: Icon().hook(Audio.speaker, self => {
         if (Audio.speaker.name?.includes('hdmi')) {
-            self.icon = "video-display-symbolic"
+            self.icon = 'video-display-symbolic'
             self.size = 12
         } else if (Audio.speaker.name?.includes('analog')) {
-            self.icon = "audio-headphones-symbolic"
+            self.icon = 'audio-headphones-symbolic'
             self.size = 14
         } 
     }),
@@ -77,11 +77,13 @@ const cache = () => Button({
     onClicked: () => cacheButtonLock.value = !cacheButtonLock.value,
     child: Box({
         children: [
-            Icon({className: 'revealerIcon', icon: cacheButtonLock.bind().as(value => value ? 'lock-symbolic' : 'drive-removable-media-symbolic')}),
+            Icon({
+                className: 'revealerIcon', 
+                icon: cacheButtonLock.bind().as(value => value ? 'lock-symbolic' : 'drive-removable-media-symbolic')}),
             Revealer({
                 reveal_child: cacheRevealerState.bind(),
                 child: Label({
-                    className: "revealerLabel",
+                    className: 'revealerLabel',
                     setup: self => self.poll(1000, self => Utils.execAsync(['bash', '-c', "grep Dirty: /proc/meminfo | awk '{print $2$3}'"]).then(cacheinfo => self.label = cacheinfo))
                 }),
                 transition: 'slide_left',
@@ -89,8 +91,8 @@ const cache = () => Button({
         ]
     })
 })
-.on("enter-notify-event", () => cacheRevealerState.value = true)
-.on("leave-notify-event", () => {if (!cacheButtonLock.value) {cacheRevealerState.value = false}})
+.on('enter-notify-event', () => cacheRevealerState.value = true)
+.on('leave-notify-event', () => {if (!cacheButtonLock.value) {cacheRevealerState.value = false}})
 
 
 const temps = () => Button({
@@ -101,23 +103,32 @@ const temps = () => Button({
                 reveal_child: tempsRevealerState.bind(),
                 child: Box({
                     children: [
-                        Icon({icon: 'cpu-symbolic'}),
+                        Icon({
+                            className: 'revealerIcon', 
+                            icon: 'cpu-symbolic'
+                        }),
                         Label({
-                            className: "revealerLabel",
-                            label: sensors.bind().as(value => `${value["coretemp-isa-0000"]["Package id 0"]["temp1_input"]} °C`)})
+                            className: 'revealerLabel',
+                            label: sensors.bind().as(value => `${value['coretemp-isa-0000']['Package id 0']['temp1_input']} °C`)})
                         ]
                 }),
                 transition: 'slide_left',
             }),
-            Icon({className: 'revealerIcon', icon: tempsButtonLock.bind().as(value => value ? 'lock-symbolic' : 'temp-symbolic'),}),
+            Icon({
+                className: 'revealerIcon', 
+                icon: tempsButtonLock.bind().as(value => value ? 'lock-symbolic' : 'temp-symbolic')
+            }),
             Revealer({
                 reveal_child: tempsRevealerState.bind(),
                 child: Box({
                     children: [
                         Label({
-                            className: "revealerLabel",
-                            label: sensors.bind().as(value => `${value["amdgpu-pci-0300"]["junction"]["temp2_input"]} °C`)}),
-                        Icon({icon: 'freon-gpu-temperature-symbolic'})
+                            className: 'revealerLabel',
+                            label: sensors.bind().as(value => `${value['amdgpu-pci-0300']['junction']['temp2_input']} °C`)}),
+                        Icon({
+                            className: 'revealerIcon', 
+                            icon: 'freon-gpu-temperature-symbolic'
+                        })
                     ]
                 }),
                 transition: 'slide_right',
@@ -126,8 +137,8 @@ const temps = () => Button({
         ]
     })
 })
-.on("enter-notify-event", () => tempsRevealerState.value = true)
-.on("leave-notify-event", () => {if (!tempsButtonLock.value) {tempsRevealerState.value = false}})
+.on('enter-notify-event', () => tempsRevealerState.value = true)
+.on('leave-notify-event', () => {if (!tempsButtonLock.value) {tempsRevealerState.value = false}})
 
 const percentages = () => Button({
     onClicked: () => percentagesButtonLock.value = !percentagesButtonLock.value,
@@ -137,23 +148,34 @@ const percentages = () => Button({
                 reveal_child: percentagesRevealerState.bind(),
                 child: Box({
                     children: [
-                        Icon({icon: 'cpu-symbolic'}),
+                        Icon({
+                            className: 'revealerIcon', 
+                            icon: 'cpu-symbolic'
+                        }),
                         Label({
-                            className: "revealerLabel",
-                            label: cpu.bind()})
+                            className: 'revealerLabel',
+                            label: cpu.bind()
+                        })
                         ]
                 }),
                 transition: 'slide_left',
             }),
-            Icon({className: 'revealerIcon', icon: percentagesButtonLock.bind().as(value => value ? 'lock-symbolic' : 'temp-symbolic'),}),
+            Icon({
+                className: 'revealerIcon', 
+                icon: percentagesButtonLock.bind().as(value => value ? 'lock-symbolic' : 'temp-symbolic')
+            }),
             Revealer({
                 reveal_child: percentagesRevealerState.bind(),
                 child: Box({
                     children: [
                         Label({
-                            className: "revealerLabel",
-                            label: ram.bind()}),
-                        Icon({icon: 'freon-gpu-temperature-symbolic'})
+                            className: 'revealerLabel',
+                            label: ram.bind()
+                        }),
+                        Icon({
+                            className: 'revealerIcon',
+                            icon: 'ram-symbolic'
+                        })
                     ]
                 }),
                 transition: 'slide_right',
@@ -162,8 +184,8 @@ const percentages = () => Button({
         ]
     })
 })
-.on("enter-notify-event", () => percentagesRevealerState.value = true)
-.on("leave-notify-event", () => {if (!percentagesButtonLock.value) {percentagesRevealerState.value = false}})
+.on('enter-notify-event', () => percentagesRevealerState.value = true)
+.on('leave-notify-event', () => {if (!percentagesButtonLock.value) {percentagesRevealerState.value = false}})
 
 
 
@@ -201,7 +223,7 @@ const speakerVolume = () => Button({
             }),
             Revealer({
                 reveal_child: speakerRevealerState.bind(),
-                child: Label({className: "revealerLabel"}).hook(Audio.speaker, self => {
+                child: Label({className: 'revealerLabel'}).hook(Audio.speaker, self => {
                     self.label = isUnwantedSinkSelected.value ? 'N/A' : `%${Math.round(Audio.speaker.volume * 100)}`
                 }),
                 transition: 'slide_left',
@@ -209,8 +231,8 @@ const speakerVolume = () => Button({
         ]
     })
 })
-.on("enter-notify-event", () => speakerRevealerState.value = true)
-.on("leave-notify-event", () => speakerRevealerState.value = false)
+.on('enter-notify-event', () => speakerRevealerState.value = true)
+.on('leave-notify-event', () => speakerRevealerState.value = false)
 
 
 const microphoneVolume = () => Button({
@@ -225,7 +247,7 @@ const microphoneVolume = () => Button({
             }),
             Revealer({
                 reveal_child: microphoneRevealerState.bind(),
-                child: Label({className: "revealerLabel"}).hook(Audio.microphone, self => {
+                child: Label({className: 'revealerLabel'}).hook(Audio.microphone, self => {
                     self.label = Audio.microphone.description == null ? 'N/A' : `%${Math.round(Audio.microphone.volume * 100)}`
                 }),
                 transition: 'slide_left',
@@ -233,8 +255,8 @@ const microphoneVolume = () => Button({
         ]
     })
 })
-.on("enter-notify-event", () => microphoneRevealerState.value = true)
-.on("leave-notify-event", () => microphoneRevealerState.value = false)
+.on('enter-notify-event', () => microphoneRevealerState.value = true)
+.on('leave-notify-event', () => microphoneRevealerState.value = false)
 
 
 
