@@ -213,7 +213,7 @@ const nowPlaying = () => Button({
 const speakerVolume = () => Button({
     on_scroll_up: () => {if (!isUnwantedSinkSelected.value) {Audio.speaker.volume < 0.9 ? Audio.speaker.volume += 0.1 : Audio.speaker.volume = 1}},
     on_scroll_down: () => {if (!isUnwantedSinkSelected.value) {Audio.speaker.volume -= 0.1}},
-    onClicked: () => Utils.execAsync(['pactl', 'set-sink-mute', '@DEFAULT_SINK@', 'toggle']),
+    onClicked: () => Audio.speaker.is_muted = !Audio.speaker.is_muted,
 	child: Box({
         children: [
             Icon({className: 'revealerIcon'}).hook(Audio.speaker, self => {
@@ -238,7 +238,7 @@ const speakerVolume = () => Button({
 const microphoneVolume = () => Button({
     on_scroll_up: () => Audio.microphone.volume < 0.9 ? Audio.microphone.volume += 0.1 : Audio.microphone.volume = 1,
     on_scroll_down: () => Audio.microphone.volume -= 0.1,
-    onClicked: () => Utils.execAsync(['pactl', 'set-source-mute', '@DEFAULT_SOURCE@', 'toggle']),
+    onClicked: () => Audio.microphone.is_muted = !Audio.microphone.is_muted,
 	child: Box({
         children: [
             Icon({className: 'revealerIcon'}).hook(Audio.microphone, self => {
