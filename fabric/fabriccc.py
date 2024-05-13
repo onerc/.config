@@ -1,4 +1,3 @@
-import json
 import psutil
 import fabric
 from fabric.widgets.box import Box
