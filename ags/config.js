@@ -7,13 +7,13 @@ const speakerRevealerState = Variable(false)
 const microphoneRevealerState = Variable(false)
 
 const cacheRevealerState = Variable(false)
-const cacheButtonLock = Variable(false)
+const cacheButtonPin = Variable(false)
 
 const tempsRevealerState = Variable(false)
-const tempsButtonLock = Variable(false)
+const tempsButtonPin = Variable(false)
 
 const percentagesRevealerState = Variable(false)
-const percentagesButtonLock = Variable(false)
+const percentagesButtonPin = Variable(false)
 
 const isUnwantedSinkSelected = Variable(false)
 const unwantedSink = 'iec958'
@@ -48,7 +48,9 @@ const audioOutputSwitch = () => Button({
         } else if (Audio.speaker.name?.includes('analog')) {
             self.icon = 'audio-headphones-symbolic'
             self.size = 14
-        } 
+        } else {
+            self.icon = 'dialog-error-symbolic'
+        }
     }),
 })
 
@@ -74,12 +76,12 @@ const Clock = () => Label({
 })
 
 const cache = () => Button({
-    onClicked: () => cacheButtonLock.value = !cacheButtonLock.value,
+    onClicked: () => cacheButtonPin.value = !cacheButtonPin.value,
     child: Box({
         children: [
             Icon({
                 className: 'revealerIcon', 
-                icon: cacheButtonLock.bind().as(value => value ? 'lock-symbolic' : 'drive-removable-media-symbolic')}),
+                icon: cacheButtonPin.bind().as(value => value ? 'lock-symbolic' : 'drive-removable-media-symbolic')}),
             Revealer({
                 reveal_child: cacheRevealerState.bind(),
                 child: Label({
@@ -92,11 +94,11 @@ const cache = () => Button({
     })
 })
 .on('enter-notify-event', () => cacheRevealerState.value = true)
-.on('leave-notify-event', () => {if (!cacheButtonLock.value) {cacheRevealerState.value = false}})
+.on('leave-notify-event', () => {if (!cacheButtonPin.value) {cacheRevealerState.value = false}})
 
 
 const temps = () => Button({
-    onClicked: () => tempsButtonLock.value = !tempsButtonLock.value,
+    onClicked: () => tempsButtonPin.value = !tempsButtonPin.value,
     child: Box({
         children: [
             Revealer({
@@ -116,7 +118,7 @@ const temps = () => Button({
             }),
             Icon({
                 className: 'revealerIcon', 
-                icon: tempsButtonLock.bind().as(value => value ? 'lock-symbolic' : 'temp-symbolic')
+                icon: tempsButtonPin.bind().as(value => value ? 'lock-symbolic' : 'temp-symbolic')
             }),
             Revealer({
                 reveal_child: tempsRevealerState.bind(),
@@ -138,10 +140,10 @@ const temps = () => Button({
     })
 })
 .on('enter-notify-event', () => tempsRevealerState.value = true)
-.on('leave-notify-event', () => {if (!tempsButtonLock.value) {tempsRevealerState.value = false}})
+.on('leave-notify-event', () => {if (!tempsButtonPin.value) {tempsRevealerState.value = false}})
 
 const percentages = () => Button({
-    onClicked: () => percentagesButtonLock.value = !percentagesButtonLock.value,
+    onClicked: () => percentagesButtonPin.value = !percentagesButtonPin.value,
     child: Box({
         children: [
             Revealer({
@@ -162,7 +164,7 @@ const percentages = () => Button({
             }),
             Icon({
                 className: 'revealerIcon', 
-                icon: percentagesButtonLock.bind().as(value => value ? 'lock-symbolic' : 'temp-symbolic')
+                icon: percentagesButtonPin.bind().as(value => value ? 'lock-symbolic' : 'edit-find-symbolic')
             }),
             Revealer({
                 reveal_child: percentagesRevealerState.bind(),
@@ -185,14 +187,14 @@ const percentages = () => Button({
     })
 })
 .on('enter-notify-event', () => percentagesRevealerState.value = true)
-.on('leave-notify-event', () => {if (!percentagesButtonLock.value) {percentagesRevealerState.value = false}})
+.on('leave-notify-event', () => {if (!percentagesButtonPin.value) {percentagesRevealerState.value = false}})
 
 
 
 const nowPlaying = () => Button({
     onClicked: () => Mpris.getPlayer()?.playPause(),
-    on_scroll_up: () => Mpris.getPlayer()?.next(),
-    on_scroll_down: () => Mpris.getPlayer()?.previous(),
+    onScrollUp: () => Mpris.getPlayer()?.next(),
+    onScrollDown: () => Mpris.getPlayer()?.previous(),
     onMiddleClick: () => Mpris.getPlayer()?.stop(),
     child: Label('-').hook(Mpris, self => {
         if (Mpris.players[0]) {
@@ -211,8 +213,8 @@ const nowPlaying = () => Button({
 })
 
 const speakerVolume = () => Button({
-    on_scroll_up: () => {if (!isUnwantedSinkSelected.value) {Audio.speaker.volume < 0.9 ? Audio.speaker.volume += 0.1 : Audio.speaker.volume = 1}},
-    on_scroll_down: () => {if (!isUnwantedSinkSelected.value) {Audio.speaker.volume -= 0.1}},
+    onScrollUp: () => {if (!isUnwantedSinkSelected.value) {Audio.speaker.volume < 0.9 ? Audio.speaker.volume += 0.1 : Audio.speaker.volume = 1}},
+    onScrollDown: () => {if (!isUnwantedSinkSelected.value) {Audio.speaker.volume -= 0.1}},
     onClicked: () => Audio.speaker.is_muted = !Audio.speaker.is_muted,
 	child: Box({
         children: [
@@ -236,8 +238,8 @@ const speakerVolume = () => Button({
 
 
 const microphoneVolume = () => Button({
-    on_scroll_up: () => Audio.microphone.volume < 0.9 ? Audio.microphone.volume += 0.1 : Audio.microphone.volume = 1,
-    on_scroll_down: () => Audio.microphone.volume -= 0.1,
+    onScrollUp: () => Audio.microphone.volume < 0.9 ? Audio.microphone.volume += 0.1 : Audio.microphone.volume = 1,
+    onScrollDown: () => Audio.microphone.volume -= 0.1,
     onClicked: () => Audio.microphone.is_muted = !Audio.microphone.is_muted,
 	child: Box({
         children: [
