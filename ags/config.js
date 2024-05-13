@@ -37,6 +37,17 @@ const ram = Variable('', {
     poll: [1000, ['bash', '-c', "free | awk '/Mem/{print $3/$2 * 100}'"], value => `${Math.round(value)}%`]
 })
 
+const cachePoll = Variable('', {
+    poll: [1000, ['bash', '-c', "grep Dirty: /proc/meminfo | awk '{print $2}'"], value => {
+        if (value >= 1048576) {
+            return `${(value/1048576).toFixed(1)} GB`
+        } else if (value >= 1024) {
+            return `${(value/1024).toFixed(1)} MB`
+        } else {
+            return`${value} KB`
+        }
+    }]
+})
 
 const audioOutputSwitch = () => Button({
     onClicked: () => Audio.speaker = Audio.speakers.find(sink => {return sink.stream !== Audio.speaker.stream}),
@@ -86,8 +97,8 @@ const cache = () => Button({
                 reveal_child: cacheRevealerState.bind(),
                 child: Label({
                     className: 'revealerLabel',
-                    setup: self => self.poll(1000, self => Utils.execAsync(['bash', '-c', "grep Dirty: /proc/meminfo | awk '{print $2$3}'"]).then(cacheinfo => self.label = cacheinfo))
-                }),
+                    label: cachePoll.bind()
+                    }),
                 transition: 'slide_left',
             })
         ]
