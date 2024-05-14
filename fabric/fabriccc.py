@@ -20,8 +20,8 @@ from fabric.utils.fabricator import Fabricator
 from fabric.hyprland.widgets import WorkspaceButton, Workspaces
 
 from fabric.audio.service import Audio
-
-nowPlayingFabricator = Fabricator(poll_from="playerctl -F metadata --format '{{artist}} - {{title}}'", stream=True)
+# \n{{position}}
+nowPlayingFabricator = Fabricator(poll_from=r"playerctl -F metadata --format '{{album}}\n{{artist}}\n{{status}}\n{{title}}\n{{volume}}'", stream=True)
 dirtyFabricator = Fabricator(poll_from="grep Dirty: /proc/meminfo", interval=1000)
 unwantedSink = "alsa_output.pci-0000_00_1f.3.iec958-stereo"
 
@@ -37,7 +37,13 @@ class NowPlaying(Button):
         self.add_events(Gdk.EventMask.SCROLL_MASK)
 
     def update_label(self, fabricator, value):
-        self.label.set_label(value)
+        album, artist, status, title, volume = value.split(r"\n")
+        if album:  # if its jellyfin
+            self.label.set_label(f"{artist} - {title}")
+        elif " - Topic" in artist:  # if its youtube and artist/channel name has "topic"
+            self.label.set_label(f"{artist.replace(" - Topic", "")} - {title}")
+        else:
+            self.label.set_label(title)
 
     @staticmethod
     def on_scroll(widget, event):
