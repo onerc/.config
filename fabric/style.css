@@ -1,0 +1,15 @@
+#revealerIcon, #revealerLabel, #powerLabel, #cacheLabel {
+    padding: 0px 4px;
+}
+
+#revealerLabel {
+    min-width: 2.6rem;
+}
+
+#powerLabel {
+	min-width: 4.6rem;
+}
+
+#cacheLabel {
+    min-width: 4.8rem;
+}
