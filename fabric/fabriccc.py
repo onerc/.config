@@ -6,21 +6,12 @@ from stuff.nowplaying import NowPlaying
 from stuff.power import Power
 
 import fabric
-from fabric.widgets.box import Box
-from fabric.widgets.centerbox import CenterBox
-from fabric.widgets.date_time import DateTime
-from fabric.widgets.wayland import Window
-#from fabric.widgets.window import Window
+from fabric.widgets import Box, CenterBox, DateTime, WaylandWindow, HyprlandWorkspaceButton, HyprlandWorkspaces
 
-from fabric.utils import (
-    get_relative_path,
-    set_stylesheet_from_file
-    )
-
-from fabric.hyprland.widgets import WorkspaceButton, Workspaces
+from fabric.utils import get_relative_path, set_stylesheet_from_file
 
 
-class barbar(Window):
+class barbar(WaylandWindow):
     def __init__(self):
         super().__init__(
             layer="top",
@@ -41,14 +32,13 @@ class barbar(Window):
                 AudioOutputSwitch()
             ]
         )
-        self.workspaces = Workspaces(
-            buttons_list=[WorkspaceButton(style="padding: 0px 6px") for _ in range(10)]
+        self.workspaces = HyprlandWorkspaces(
+            buttons_list=[HyprlandWorkspaceButton(style="padding: 0px 6px") for _ in range(10)]
         )
         self.centerbox.add_start(self.workspaces)
-
-        self.centerbox.add_center(CenterBox(style="min-width:166px", end_children=HardwareUsage()))
-        self.centerbox.add_center(DateTime(["%H:%M", "%A | %m.%d.%Y"]))
-        self.centerbox.add_center(CenterBox(style="min-width:166px", start_children=HardwareTemps()))
+        self.centerbox.add_center(CenterBox(end_children=HardwareUsage()))
+        self.centerbox.add_center(DateTime(["%H:%M", "%A | %d.%m.%Y"]))
+        self.centerbox.add_center(CenterBox(start_children=HardwareTemps()))
 
         self.centerbox.add_end(NowPlaying())
         self.centerbox.add_end(self.media_box)
