@@ -1,12 +1,7 @@
-from fabric.widgets.button import Button
-from fabric.widgets.label import Label
-
+from fabric.widgets import Button, Label
 from fabric.utils.fabricator import Fabricator
-
 from fabric.utils import exec_shell_command
-
 from gi.repository import Gdk
-
 
 # \n{{position}}
 now_playing_fabricator = Fabricator(poll_from=r"playerctl -F metadata --format '{{album}}\n{{artist}}\n{{status}}\n{{title}}\n{{volume}}'", stream=True)
@@ -37,11 +32,11 @@ class NowPlaying(Button):
 
     @staticmethod
     def on_scroll(widget, event):
-        match event.direction:
+        match not event.direction:
             case 0:
-                exec_shell_command("playerctl next")
-            case 1:
                 exec_shell_command("playerctl previous")
+            case 1:
+                exec_shell_command("playerctl next")
 
     @staticmethod
     def on_click(widget, event):
