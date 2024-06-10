@@ -1,9 +1,17 @@
-#revealerIcon, #revealerLabel, #powerLabel, #cacheLabel {
+#revealerIcon, #revealerLabel, #powerLabel, #cacheLabel, #hardwareLabel, #percentageLabel {
     padding: 0px 4px;
 }
 
 #revealerLabel {
     min-width: 2.6rem;
+}
+
+#percentageLabel {
+    min-width: 2.6rem;
+}
+
+#hardwareLabel {
+    min-width: 2.9rem;
 }
 
 #powerLabel {
