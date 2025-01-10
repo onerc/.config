@@ -1,6 +1,4 @@
 from __init__ import *
-from calendar import Calendar, day_abbr
-from datetime import datetime
 
 class CalendarPopUp(WaylandWindow):
     def __init__(self):
