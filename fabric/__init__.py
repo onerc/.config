@@ -18,6 +18,7 @@ from gi.repository import Gtk
 from time import sleep
 import psutil
 import requests
+from calendar import Calendar, day_abbr
 from datetime import datetime
 
 transition_duration = 250
@@ -27,7 +28,7 @@ icon_size = 16
 
 config = {
     "api_key" : "d07186c0c823985f93cf8b2b1dc0c387",
-    "city_name" : "Balçova",
+    "city_name" : "",
     "network_interface": "enp6s0",
     "unwanted_sink": "alsa_output.pci-0000_00_1f.3.iec958-stereo",
     "psutil_cpu": "coretemp",
