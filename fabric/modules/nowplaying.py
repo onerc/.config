@@ -23,7 +23,7 @@ class NowPlaying(Button):
         self.add_events("scroll")
 
     def update_icon_and_label(self, fabricator, value):
-        self.icon.set_from_icon_name(self.find_icon(value))
+        self.icon.set_from_icon_name(self.find_icon(value), icon_size=icon_size)
         self.label.set_label(self.find_label(value))
 
     @staticmethod
@@ -48,7 +48,7 @@ class NowPlaying(Button):
         try:
             return icon_dict[value.split(r"\n")[-3]]
         except IndexError:
-            return "Stopped"
+            return icon_dict["Stopped"]
 
     @staticmethod
     def on_scroll(widget, event):
